@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PunisherGameMode.h"
-#include "PunisherCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 APunisherGameMode::APunisherGameMode()
