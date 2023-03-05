@@ -32,6 +32,34 @@ void APunisherCharacter::BeginPlay()
 	
 }
 
+void APunisherCharacter::MoveForward(float Value)
+{
+	if ((Controller != nullptr) && (Value != 0.0f))
+	{
+		// WHich way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation{ 0, Rotation.Yaw, 0 };
+
+		const FVector Direction{ FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::X) };
+		AddMovementInput(Direction, Value);
+
+	}
+}
+
+void APunisherCharacter::MoveRight(float Value)
+{
+	if ((Controller != nullptr) && (Value != 0.0f))
+	{
+		// WHich way is right
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation{ 0, Rotation.Yaw, 0 };
+
+		const FVector Direction{ FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::Y) };
+		AddMovementInput(Direction, Value);
+
+	}
+}
+
 // Called every frame
 void APunisherCharacter::Tick(float DeltaTime)
 {
@@ -43,6 +71,9 @@ void APunisherCharacter::Tick(float DeltaTime)
 void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	check(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &APunisherCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &APunisherCharacter::MoveRight);
 }
 
