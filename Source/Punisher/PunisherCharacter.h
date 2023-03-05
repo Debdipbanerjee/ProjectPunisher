@@ -7,7 +7,8 @@
 #include "PunisherCharacter.generated.h"
 
 
-class USpringArmComponent; 
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class PUNISHER_API APunisherCharacter : public ACharacter
@@ -42,10 +43,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 		USpringArmComponent* CameraBoom;
 
+	// Camera to follow the character
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FollowCamera;
+
 public:
 
 	// Returns Camera Boom
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	// Return Follow Camera
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 #pragma endregion
 
