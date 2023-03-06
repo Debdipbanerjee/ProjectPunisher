@@ -3,8 +3,11 @@
 
 #include "PunisherCharacter.h"
 
-#include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+
 
 // Sets default values
 APunisherCharacter::APunisherCharacter()
@@ -26,6 +29,16 @@ APunisherCharacter::APunisherCharacter()
 	BaseTurnRate = 45.0f;
 	BaseLookUpRate = 45.0f;
 
+	// Don't rotate when controller rotates
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// Confggure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Moves direction of input
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // at this rotation rate
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
+	GetCharacterMovement()->AirControl = 0.2f;
 
 
 }
