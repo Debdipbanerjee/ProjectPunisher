@@ -30,6 +30,12 @@ protected:
 
 	void MoveRight(float Value);
 
+	// Called via input to turn at a given rate (Normalized)
+	void TurnAtRate(float Rate);
+
+	// Called via input to look up down at a given rate (Normalized)
+	void LookUpAtRate(float Rate);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -46,11 +52,19 @@ public:
 private:
 	// Camera boom Spring arm to hold camera behind the actor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-		USpringArmComponent* CameraBoom;
+	USpringArmComponent* CameraBoom;
 
 	// Camera to follow the character
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	// Turn rate Deg/Sec
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseTurnRate;
+
+	// Base Look Up rate Deg/sec
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseLookUpRate;
 
 public:
 

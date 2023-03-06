@@ -90,13 +90,8 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APunisherCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APunisherCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("TurnRate", this, &APunisherCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &APunisherCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 }
 
