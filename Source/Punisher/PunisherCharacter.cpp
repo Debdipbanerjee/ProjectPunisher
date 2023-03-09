@@ -8,6 +8,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
+#include "Sound/SoundCue.h"
+
 
 // Sets default values
 APunisherCharacter::APunisherCharacter()
@@ -118,5 +122,10 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void APunisherCharacter::FireWeapon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Fire"));
+
+	if (FireSound)
+	{
+		UGameplayStatics::PlaySound2D(this, FireSound);
+	}
 }
 

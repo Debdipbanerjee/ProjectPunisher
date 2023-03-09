@@ -9,6 +9,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class USoundCue;
 
 UCLASS()
 class PUNISHER_API APunisherCharacter : public ACharacter
@@ -80,8 +81,12 @@ public:
 
 private:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	USoundCue* FireSound;
+
 protected:
 
+	// Called when Fire Button is Pressed
 	void FireWeapon();
 
 #pragma endregion
