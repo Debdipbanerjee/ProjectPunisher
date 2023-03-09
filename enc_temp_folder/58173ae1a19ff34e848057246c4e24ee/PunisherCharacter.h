@@ -76,14 +76,5 @@ public:
 
 #pragma endregion
 
-#pragma region Combat
-
-private:
-
-protected:
-
-	void FireWeapon();
-
-#pragma endregion
 
 };

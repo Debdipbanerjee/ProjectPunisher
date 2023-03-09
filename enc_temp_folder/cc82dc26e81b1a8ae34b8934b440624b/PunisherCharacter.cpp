@@ -111,12 +111,5 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireWeapon);
-}
-
-void APunisherCharacter::FireWeapon()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Fire"));
 }
 
