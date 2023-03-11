@@ -14,6 +14,8 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#include "Particles/ParticleSystemComponent.h"
+
 #include "Sound/SoundCue.h"
 
 
@@ -148,15 +150,29 @@ void APunisherCharacter::FireWeapon()
 		const FVector RotationAxis{ Rotation.GetAxisX() };
 		const FVector End{ Start + RotationAxis * 50000.0f };
 
+		FVector BeamEndPoint{ End }; // initialize with end of traced line
+
 		GetWorld()->LineTraceSingleByChannel(FireHit,Start, End, ECollisionChannel::ECC_Visibility);
 		if (FireHit.bBlockingHit)
 		{
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3.0f);
-			DrawDebugPoint(GetWorld(), FireHit.Location, 5.0f, FColor::Red, false, 3.0f);
+			//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3.0f);
+			//DrawDebugPoint(GetWorld(), FireHit.Location, 5.0f, FColor::Red, false, 3.0f);
+
+			// if It hit's something
+			BeamEndPoint = FireHit.Location;
 
 			if (ImpactParticles)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
+			}
+		}
+
+		if (BeamParticles)
+		{
+			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
+			if (Beam)
+			{
+				Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
 			}
 		}
 	}

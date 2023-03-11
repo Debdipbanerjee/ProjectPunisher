@@ -99,6 +99,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
 
+	// Smoke trails for bullets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* BeamParticles;
+
 protected:
 
 	// Called when Fire Button is Pressed
