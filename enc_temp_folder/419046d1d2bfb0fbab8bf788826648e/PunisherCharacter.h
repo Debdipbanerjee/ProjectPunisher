@@ -11,7 +11,6 @@ class USpringArmComponent;
 class UCameraComponent;
 class USoundCue;
 class UParticleSystem;
-class UAnimMontage;
 
 UCLASS()
 class PUNISHER_API APunisherCharacter : public ACharacter
@@ -90,10 +89,6 @@ private:
 	// Flash Spawned at BarrelSocket
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* MuzzleFlash;
-
-	// Monatage for firing weapon
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* HipFireMontage;
 
 protected:
 
