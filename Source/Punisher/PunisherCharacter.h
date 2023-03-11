@@ -108,6 +108,8 @@ protected:
 	// Called when Fire Button is Pressed
 	void FireWeapon();
 
+	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+
 #pragma endregion
 
 };
