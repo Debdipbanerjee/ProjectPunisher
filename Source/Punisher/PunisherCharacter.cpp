@@ -31,6 +31,7 @@ APunisherCharacter::APunisherCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 300.0f;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->SocketOffset = FVector(0.0f, 50.0f, 50.0f);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -41,11 +42,11 @@ APunisherCharacter::APunisherCharacter()
 
 	// Don't rotate when controller rotates
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Confggure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Moves direction of input
+	GetCharacterMovement()->bOrientRotationToMovement = false; // Moves direction of input
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
