@@ -153,6 +153,11 @@ void APunisherCharacter::FireWeapon()
 		{
 			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3.0f);
 			DrawDebugPoint(GetWorld(), FireHit.Location, 5.0f, FColor::Red, false, 3.0f);
+
+			if (ImpactParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
+			}
 		}
 	}
 
