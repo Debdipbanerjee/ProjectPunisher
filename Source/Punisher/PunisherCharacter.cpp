@@ -169,7 +169,6 @@ void APunisherCharacter::FireWeapon()
 				}
 			}
 		}
-
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

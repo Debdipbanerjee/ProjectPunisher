@@ -6,6 +6,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 void UPunisherAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
 	if (PunisherCharacter == nullptr)
@@ -34,6 +36,15 @@ void UPunisherAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			bIsAccelerating = false;
 		}
 
+		FRotator AimRotation = PunisherCharacter->GetBaseAimRotation();
+		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PunisherCharacter->GetVelocity());
+
+		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
+
+		if (PunisherCharacter->GetVelocity().Size() > 0.0f)
+		{
+			LastMovementOffsetYaw = MovementOffsetYaw;
+		}
 	}
 }
 
