@@ -154,7 +154,7 @@ void APunisherCharacter::FireWeapon()
 
 		// Get Screen space location of crosshair
 		FVector2D CrosshairLocation(ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f);
-		CrosshairLocation.Y -= 50.0f;
+		CrosshairLocation.Y -= 75.0f;
 		FVector CrosshairWorldPosition;
 		FVector CrosshairWorldDirection;
 
@@ -199,6 +199,38 @@ void APunisherCharacter::FireWeapon()
 				}
 			}
 		}
+
+		//FHitResult FireHit;
+		//const FVector Start{ SocketTransform.GetLocation() };
+		//const FQuat Rotation{ SocketTransform.GetRotation() };
+		//const FVector RotationAxis{ Rotation.GetAxisX() };
+		//const FVector End{ Start + RotationAxis * 50000.0f };
+
+		//FVector BeamEndPoint{ End }; // initialize with end of traced line
+
+		//GetWorld()->LineTraceSingleByChannel(FireHit,Start, End, ECollisionChannel::ECC_Visibility);
+		//if (FireHit.bBlockingHit)
+		//{
+		//	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3.0f);
+		//	//DrawDebugPoint(GetWorld(), FireHit.Location, 5.0f, FColor::Red, false, 3.0f);
+
+		//	// if It hit's something
+		//	BeamEndPoint = FireHit.Location;
+
+		//	if (ImpactParticles)
+		//	{
+		//		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
+		//	}
+		//}
+
+		//if (BeamParticles)
+		//{
+		//	UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
+		//	if (Beam)
+		//	{
+		//		Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
+		//	}
+		//}
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
