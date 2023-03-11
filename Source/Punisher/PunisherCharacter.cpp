@@ -165,14 +165,14 @@ void APunisherCharacter::FireWeapon()
 		// if deprojectin successful
 		if (bScreenToWorld)
 		{
+			//Line trace from crosshair world location
 			FHitResult ScreenTraceHit;
 			const FVector Start{ CrosshairWorldPosition };
 			const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50'000.0f };
 
 			// Set beam end point to line trace end point
 			FVector BeamEndPoint{ End };
-
-			//Line trace from crosshair world location
+			
 			GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
 
 			//if we hit something
@@ -180,12 +180,26 @@ void APunisherCharacter::FireWeapon()
 			{
 				// beam ends at hit location
 				BeamEndPoint = ScreenTraceHit.Location;
+			}
 
-				// spawn impact particle at hit point
-				if (ImpactParticles)
-				{
-					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, ScreenTraceHit.Location);
-				}
+			// Line Trace from Gun Barrel to Crosshair
+			FHitResult WeaponTraceHit;
+			const FVector WeaponTraceStart{SocketTransform.GetLocation()};
+			const FVector WeaponTraceEnd{ BeamEndPoint };
+
+			GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+
+			// if we hit something that's between barrel and crosshair
+			if (WeaponTraceHit.bBlockingHit)
+			{
+				// beam ends at hit location
+				BeamEndPoint = WeaponTraceHit.Location;
+			}
+
+			// spawn impact particle at hit point
+			if (ImpactParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEndPoint);
 			}
 
 			//if Beam particle is valid
