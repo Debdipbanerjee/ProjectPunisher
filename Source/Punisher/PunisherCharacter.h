@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USoundCue;
+class UParticleSystem;
 
 UCLASS()
 class PUNISHER_API APunisherCharacter : public ACharacter
@@ -81,8 +82,13 @@ public:
 
 private:
 
+	// Randomized Gunshot sound cue
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	USoundCue* FireSound;
+
+	// Flash Spawned at BarrelSocket
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* MuzzleFlash;
 
 protected:
 
