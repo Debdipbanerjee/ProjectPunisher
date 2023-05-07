@@ -75,6 +75,13 @@ private:
 	// Field of view value for when zoomed in
 	float CameraZoomedFOV;
 
+	// Current field of view this frame
+	float CameraCurrentFOV;
+
+	// Interp speed for zooming while aiming
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpSpeed;
+
 public:
 
 	// Returns Camera Boom
@@ -123,6 +130,8 @@ protected:
 	// set bAiming to true or false based on button pressed
 	void AimingButtonPressed();
 	void AimingButtonReleased();
+
+	void CameraInterpZoom(float DeltaTime);
 
 #pragma endregion
 

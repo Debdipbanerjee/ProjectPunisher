@@ -23,7 +23,9 @@
 APunisherCharacter::APunisherCharacter() :
 	bAiming(false),
 	CameraDefaultFOV(0.0f),
-	CameraZoomedFOV(60.0f)
+	CameraZoomedFOV(35.0f),
+	CameraCurrentFOV(0.0f),
+	ZoomInterpSpeed(20.0f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -32,9 +34,9 @@ APunisherCharacter::APunisherCharacter() :
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->TargetArmLength = 180.0f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SocketOffset = FVector(0.0f, 50.0f, 50.0f);
+	CameraBoom->SocketOffset = FVector(0.0f, 50.0f, 70.0f);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -65,6 +67,7 @@ void APunisherCharacter::BeginPlay()
 	if (FollowCamera)
 	{
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
 	}
 }
 
@@ -111,6 +114,8 @@ void APunisherCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Handle Interpolation for zoom when aiming
+	CameraInterpZoom(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -257,5 +262,22 @@ void APunisherCharacter::AimingButtonReleased()
 {
 	bAiming = false;
 	GetFollowCamera()->SetFieldOfView(CameraDefaultFOV);
+}
+
+void APunisherCharacter::CameraInterpZoom(float DeltaTime)
+{
+	// Set current camera FOV
+	if (bAiming)
+	{
+		// LERP to zoomed FOV
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	else
+	{
+		// LERP to default FOV
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+
+	GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
 }
 
