@@ -21,9 +21,7 @@
 
 // Sets default values
 APunisherCharacter::APunisherCharacter() :
-	bAiming(false),
-	CameraDefaultFOV(0.0f),
-	CameraZoomedFOV(60.0f)
+	bAiming(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -62,10 +60,6 @@ void APunisherCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (FollowCamera)
-	{
-		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
-	}
 }
 
 void APunisherCharacter::MoveForward(float Value)
@@ -131,9 +125,6 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireWeapon);
-
-	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &APunisherCharacter::AimingButtonPressed);
-	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &APunisherCharacter::AimingButtonReleased);
 }
 
 void APunisherCharacter::FireWeapon()
@@ -250,12 +241,10 @@ bool APunisherCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 void APunisherCharacter::AimingButtonPressed()
 {
 	bAiming = true;
-	GetFollowCamera()->SetFieldOfView(CameraZoomedFOV);
 }
 
 void APunisherCharacter::AimingButtonReleased()
 {
 	bAiming = false;
-	GetFollowCamera()->SetFieldOfView(CameraDefaultFOV);
 }
 

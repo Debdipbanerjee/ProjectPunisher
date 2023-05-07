@@ -69,12 +69,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseLookUpRate;
 
-	// Default camera field of view value
-	float CameraDefaultFOV;
-
-	// Field of view value for when zoomed in
-	float CameraZoomedFOV;
-
 public:
 
 	// Returns Camera Boom
@@ -109,7 +103,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* BeamParticles;
 
-	// true when aiming
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
