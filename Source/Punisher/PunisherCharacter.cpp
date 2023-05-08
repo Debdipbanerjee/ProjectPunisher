@@ -22,10 +22,25 @@
 // Sets default values
 APunisherCharacter::APunisherCharacter() :
 	bAiming(false),
+	// Base rates for turning/looking up
+	BaseTurnRate(45.0f),
+	BaseLookUpRate(45.0f),
+	// Turn rates for aiming/not aiming
+	HipTurnRate(90.0f),
+	HipLookUpRate(90.0f),
+	AimingTurnRate(20.0f),
+	AimingLookUpRate(20.0f),
+	// Mouse look sensitivity scale factors
+	MouseHipTurnRate(1.0f),
+	MouseHipLookUpRate(1.0f),
+	MouseAimingTurnRate(0.2f),
+	MouseAimingLookUpRate(0.2f),
+	// Camera zoom properties
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
 	ZoomInterpSpeed(20.0f)
+	
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,9 +56,6 @@ APunisherCharacter::APunisherCharacter() :
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-
-	BaseTurnRate = 45.0f;
-	BaseLookUpRate = 45.0f;
 
 	// Don't rotate when controller rotates
 	bUseControllerRotationPitch = false;
@@ -109,6 +121,34 @@ void APunisherCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void APunisherCharacter::Turn(float Value)
+{
+	float TurnScaleFactor{};
+	if (bAiming)
+	{
+		TurnScaleFactor = MouseAimingTurnRate;
+	}
+	else
+	{
+		TurnScaleFactor = MouseHipTurnRate;
+	}
+	AddControllerYawInput(Value * TurnScaleFactor);
+}
+
+void APunisherCharacter::LookUp(float Value)
+{
+	float LookUpScaleFactor{};
+	if (bAiming)
+	{
+		LookUpScaleFactor = MouseAimingLookUpRate;
+	}
+	else
+	{
+		LookUpScaleFactor = MouseHipLookUpRate;
+	}
+	AddControllerPitchInput(Value * LookUpScaleFactor);
+}
+
 // Called every frame
 void APunisherCharacter::Tick(float DeltaTime)
 {
@@ -116,6 +156,9 @@ void APunisherCharacter::Tick(float DeltaTime)
 
 	// Handle Interpolation for zoom when aiming
 	CameraInterpZoom(DeltaTime);
+
+	// Set look rats based on aiming
+	SetLookRates();
 }
 
 // Called to bind functionality to input
@@ -129,8 +172,8 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &APunisherCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APunisherCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &APunisherCharacter::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &APunisherCharacter::LookUp);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -279,5 +322,19 @@ void APunisherCharacter::CameraInterpZoom(float DeltaTime)
 	}
 
 	GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+}
+
+void APunisherCharacter::SetLookRates()
+{
+	if (bAiming)
+	{
+		BaseTurnRate = AimingTurnRate;
+		BaseLookUpRate = AimingLookUpRate;
+	}
+	else
+	{
+		BaseTurnRate = HipTurnRate;
+		BaseLookUpRate = HipLookUpRate;
+	}
 }
 

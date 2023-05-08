@@ -21,7 +21,21 @@
 
 // Sets default values
 APunisherCharacter::APunisherCharacter() :
-	bAiming(false)
+	bAiming(false),
+	// Base rates for turning/looking up
+	BaseTurnRate(45.0f),
+	BaseLookUpRate(45.0f),
+	// Turn rates for aiming/not aiming
+	HipTurnRate(90.0f),
+	HipLookUpRate(90.0f),
+	AimingTurnRate(20.0f),
+	AimingLookUpRate(20.0f),
+	// Camera zoom properties
+	CameraDefaultFOV(0.0f),
+	CameraZoomedFOV(35.0f),
+	CameraCurrentFOV(0.0f),
+	ZoomInterpSpeed(20.0f)
+	
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,16 +44,13 @@ APunisherCharacter::APunisherCharacter() :
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->TargetArmLength = 180.0f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SocketOffset = FVector(0.0f, 50.0f, 50.0f);
+	CameraBoom->SocketOffset = FVector(0.0f, 50.0f, 70.0f);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-
-	BaseTurnRate = 45.0f;
-	BaseLookUpRate = 45.0f;
 
 	// Don't rotate when controller rotates
 	bUseControllerRotationPitch = false;
@@ -60,6 +71,11 @@ void APunisherCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (FollowCamera)
+	{
+		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
+	}
 }
 
 void APunisherCharacter::MoveForward(float Value)
@@ -105,6 +121,19 @@ void APunisherCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Handle Interpolation for zoom when aiming
+	CameraInterpZoom(DeltaTime);
+
+	if (bAiming)
+	{
+		//BaseTurnRate = AimingTurnRate;
+		//BaseLookUpRate = AimingLookUpRate;
+	}
+	else
+	{
+		//BaseTurnRate = HipTurnRate;
+		//BaseLookUpRate = HipLookUpRate;
+	}
 }
 
 // Called to bind functionality to input
@@ -125,6 +154,9 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireWeapon);
+
+	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &APunisherCharacter::AimingButtonPressed);
+	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &APunisherCharacter::AimingButtonReleased);
 }
 
 void APunisherCharacter::FireWeapon()
@@ -241,10 +273,29 @@ bool APunisherCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 void APunisherCharacter::AimingButtonPressed()
 {
 	bAiming = true;
+	GetFollowCamera()->SetFieldOfView(CameraZoomedFOV);
 }
 
 void APunisherCharacter::AimingButtonReleased()
 {
 	bAiming = false;
+	GetFollowCamera()->SetFieldOfView(CameraDefaultFOV);
+}
+
+void APunisherCharacter::CameraInterpZoom(float DeltaTime)
+{
+	// Set current camera FOV
+	if (bAiming)
+	{
+		// LERP to zoomed FOV
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	else
+	{
+		// LERP to default FOV
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+
+	GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
 }
 

@@ -69,6 +69,35 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseLookUpRate;
 
+	// Turn rate while not aiming
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float HipTurnRate;
+
+	// Look up rate while not aiming
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float HipLookUpRate;
+
+	// Turn rate while aiming
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float AimingTurnRate;
+
+	// Look up rate while aiming
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float AimingLookUpRate;
+
+	// Default camera field of view value
+	float CameraDefaultFOV;
+
+	// Field of view value for when zoomed in
+	float CameraZoomedFOV;
+
+	// Current field of view this frame
+	float CameraCurrentFOV;
+
+	// Interp speed for zooming while aiming
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpSpeed;
+
 public:
 
 	// Returns Camera Boom
@@ -76,6 +105,8 @@ public:
 
 	// Return Follow Camera
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	FORCEINLINE bool GetAiming() const { return bAiming; }
 
 #pragma endregion
 
@@ -103,6 +134,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* BeamParticles;
 
+	// true when aiming
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
@@ -116,6 +148,8 @@ protected:
 	// set bAiming to true or false based on button pressed
 	void AimingButtonPressed();
 	void AimingButtonReleased();
+
+	void CameraInterpZoom(float DeltaTime);
 
 #pragma endregion
 
