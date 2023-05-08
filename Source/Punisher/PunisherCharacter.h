@@ -90,6 +90,8 @@ public:
 	// Return Follow Camera
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	FORCEINLINE bool GetAiming() const { return bAiming; }
+
 #pragma endregion
 
 #pragma region Combat

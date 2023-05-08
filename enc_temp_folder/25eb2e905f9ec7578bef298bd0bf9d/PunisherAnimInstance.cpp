@@ -45,8 +45,6 @@ void UPunisherAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		{
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
-
-		bAiming = PunisherCharacter->GetAiming();
 	}
 }
 
