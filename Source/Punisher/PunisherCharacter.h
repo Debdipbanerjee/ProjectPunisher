@@ -130,6 +130,12 @@ public:
 
 	FORCEINLINE bool GetAiming() const { return bAiming; }
 
+
+protected:
+
+	void CameraInterpZoom(float DeltaTime);
+	void SetLookRates();
+
 #pragma endregion
 
 #pragma region Combat
@@ -160,6 +166,18 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
+	// if the fire button is pressed
+	bool bFireButtonPressed;
+
+	// True when we can fire, false when waiting for timer
+	bool bShouldFire;
+
+	// Rate of automatic gun fire
+	float AutomaticFireRate;
+
+	// Timer for automatic Fire
+	FTimerHandle AutoFireTimer;
+
 protected:
 
 	// Called when Fire Button is Pressed
@@ -171,8 +189,13 @@ protected:
 	void AimingButtonPressed();
 	void AimingButtonReleased();
 
-	void CameraInterpZoom(float DeltaTime);
-	void SetLookRates();
+	void FireButtonPressed();
+	void FireButtonReleased();
+
+	void StartFireTimer();
+
+	UFUNCTION()
+	void AutoFireReset();
 
 #pragma endregion
 

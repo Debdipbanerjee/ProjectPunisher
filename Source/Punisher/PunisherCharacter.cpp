@@ -39,7 +39,11 @@ APunisherCharacter::APunisherCharacter() :
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
-	ZoomInterpSpeed(20.0f)
+	ZoomInterpSpeed(20.0f),
+	// Fire variables
+	AutomaticFireRate(0.1f),
+	bShouldFire(true),
+	bFireButtonPressed(false)
 	
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -178,7 +182,8 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("FireButton", IE_Released, this, &APunisherCharacter::FireButtonReleased);
 
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &APunisherCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &APunisherCharacter::AimingButtonReleased);
@@ -305,6 +310,39 @@ void APunisherCharacter::AimingButtonReleased()
 {
 	bAiming = false;
 	GetFollowCamera()->SetFieldOfView(CameraDefaultFOV);
+}
+
+void APunisherCharacter::FireButtonPressed()
+{
+	bFireButtonPressed = true;
+	StartFireTimer();
+}
+
+void APunisherCharacter::FireButtonReleased()
+{
+	bFireButtonPressed = false;
+}
+
+void APunisherCharacter::StartFireTimer()
+{
+	if (bShouldFire)
+	{
+		// Fire the weapon
+		FireWeapon();
+		bShouldFire = false;
+
+		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &APunisherCharacter::AutoFireReset, AutomaticFireRate);
+	}
+}
+
+void APunisherCharacter::AutoFireReset()
+{
+	bShouldFire = true;
+
+	if (bFireButtonPressed)
+	{
+		StartFireTimer();
+	}
 }
 
 void APunisherCharacter::CameraInterpZoom(float DeltaTime)

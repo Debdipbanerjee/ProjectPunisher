@@ -30,11 +30,20 @@ APunisherCharacter::APunisherCharacter() :
 	HipLookUpRate(90.0f),
 	AimingTurnRate(20.0f),
 	AimingLookUpRate(20.0f),
+	// Mouse look sensitivity scale factors
+	MouseHipTurnRate(1.0f),
+	MouseHipLookUpRate(1.0f),
+	MouseAimingTurnRate(0.2f),
+	MouseAimingLookUpRate(0.2f),
 	// Camera zoom properties
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
-	ZoomInterpSpeed(20.0f)
+	ZoomInterpSpeed(20.0f),
+	// Fire variables
+	AutomaticFireRate(0.1f),
+	bShouldFire(true),
+	bFireButtonPressed(false)
 	
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -116,6 +125,34 @@ void APunisherCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void APunisherCharacter::Turn(float Value)
+{
+	float TurnScaleFactor{};
+	if (bAiming)
+	{
+		TurnScaleFactor = MouseAimingTurnRate;
+	}
+	else
+	{
+		TurnScaleFactor = MouseHipTurnRate;
+	}
+	AddControllerYawInput(Value * TurnScaleFactor);
+}
+
+void APunisherCharacter::LookUp(float Value)
+{
+	float LookUpScaleFactor{};
+	if (bAiming)
+	{
+		LookUpScaleFactor = MouseAimingLookUpRate;
+	}
+	else
+	{
+		LookUpScaleFactor = MouseHipLookUpRate;
+	}
+	AddControllerPitchInput(Value * LookUpScaleFactor);
+}
+
 // Called every frame
 void APunisherCharacter::Tick(float DeltaTime)
 {
@@ -124,16 +161,8 @@ void APunisherCharacter::Tick(float DeltaTime)
 	// Handle Interpolation for zoom when aiming
 	CameraInterpZoom(DeltaTime);
 
-	if (bAiming)
-	{
-		//BaseTurnRate = AimingTurnRate;
-		//BaseLookUpRate = AimingLookUpRate;
-	}
-	else
-	{
-		//BaseTurnRate = HipTurnRate;
-		//BaseLookUpRate = HipLookUpRate;
-	}
+	// Set look rats based on aiming
+	SetLookRates();
 }
 
 // Called to bind functionality to input
@@ -147,13 +176,14 @@ void APunisherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &APunisherCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APunisherCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &APunisherCharacter::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &APunisherCharacter::LookUp);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &APunisherCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("FireButton", IE_Released, this, &APunisherCharacter::FireButtonReleased);
 
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &APunisherCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &APunisherCharacter::AimingButtonReleased);
@@ -282,6 +312,39 @@ void APunisherCharacter::AimingButtonReleased()
 	GetFollowCamera()->SetFieldOfView(CameraDefaultFOV);
 }
 
+void APunisherCharacter::FireButtonPressed()
+{
+	bFireButtonPressed = true;
+	StartFireTimer();
+}
+
+void APunisherCharacter::FireButtonReleased()
+{
+	bFireButtonPressed = false;
+}
+
+void APunisherCharacter::StartFireTimer()
+{
+	if (bShouldFire)
+	{
+		// Fire the weapon
+		FireWeapon();
+		bShouldFire = false;
+
+		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &APunisherCharacter::AutoFireReset, AutomaticFireRate);
+	}
+}
+
+void APunisherCharacter::AutoFireReset()
+{
+	bShouldFire = true;
+
+	if (bFireButtonPressed)
+	{
+		StartFireTimer();
+	}
+}
+
 void APunisherCharacter::CameraInterpZoom(float DeltaTime)
 {
 	// Set current camera FOV
@@ -297,5 +360,19 @@ void APunisherCharacter::CameraInterpZoom(float DeltaTime)
 	}
 
 	GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+}
+
+void APunisherCharacter::SetLookRates()
+{
+	if (bAiming)
+	{
+		BaseTurnRate = AimingTurnRate;
+		BaseLookUpRate = AimingLookUpRate;
+	}
+	else
+	{
+		BaseTurnRate = HipTurnRate;
+		BaseLookUpRate = HipLookUpRate;
+	}
 }
 
